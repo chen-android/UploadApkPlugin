@@ -1,0 +1,57 @@
+
+plugins {
+    id 'com.gradle.plugin-publish' version '0.12.0'
+    id 'java-gradle-plugin'
+    id 'maven-publish'
+}
+repositories {
+    maven { url 'https://maven.aliyun.com/repository/public'}
+}
+dependencies {
+    implementation "com.squareup.okhttp3:okhttp:4.9.0"
+    implementation "org.apache.commons:commons-lang3:3.11"
+}
+
+version = "1.0"
+group = "com.cs"
+
+gradlePlugin {
+    plugins {
+        UploadApkPlugin {
+            id = 'com.cs.uploadapk'
+            implementationClass = 'com.cs.plugin.UploadApkPlugin'
+        }
+    }
+}
+
+pluginBundle {
+    website = 'http://www.cs'
+    vcsUrl = 'https://github.com/gradle/gradle'
+    description = '上传apk文件到蒲公英'
+    tags = ['uploadApk']
+
+    plugins {
+        UploadApkPlugin {
+            displayName = '上传应用到蒲公英插件'
+        }
+    }
+}
+
+publishing {
+    publications {
+        UploadApkPlugin(MavenPublication) {
+            groupId = group
+            artifactId = "upload-apk-plugin"
+            version = version
+
+            from components.java
+        }
+    }
+}
+
+//UploadApkPgyerParams {
+//    apkFileLocation = "./build/xxx"
+//    uKey = ""
+//    apiKey = ""
+//}
+
