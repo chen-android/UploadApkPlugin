@@ -13,20 +13,20 @@ dependencies {
 }
 
 version = "1.0"
-group = "com.cs"
+group = "com.bbkb"
 
 gradlePlugin {
     plugins {
         UploadApkPlugin {
-            id = 'com.cs.uploadapk'
+            id = 'com.bbkb.uploadapk'
             implementationClass = 'com.cs.plugin.UploadApkPlugin'
         }
     }
 }
 
 pluginBundle {
-    website = 'http://www.cs'
-    vcsUrl = 'https://github.com/gradle/gradle'
+    website = 'http://www.bababus.com'
+    vcsUrl = 'https://github.com/chen-android/UploadApkPlugin'
     description = '上传apk文件到蒲公英'
     tags = ['uploadApk']
 
@@ -38,6 +38,15 @@ pluginBundle {
 }
 
 publishing {
+    repositories {
+        maven {
+            credentials {
+                username "admin"
+                password "admin123456"
+            }
+            url "http://xxxxxx/repository/maven-releases/"
+        }
+    }
     publications {
         UploadApkPlugin(MavenPublication) {
             groupId = group
@@ -50,8 +59,10 @@ publishing {
 }
 
 //UploadApkPgyerParams {
-//    apkFileLocation = "./build/xxx"
-//    uKey = ""
+//    apkFileLocation = "./build/outputs/apk/release"
 //    apiKey = ""
+//    buildInstallType = "2"
+//    buildPassword = "1"
+//    buildUpdateDescription = "xx上传"
 //}
 

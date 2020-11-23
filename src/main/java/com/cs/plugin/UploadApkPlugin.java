@@ -6,7 +6,6 @@ import org.gradle.api.Plugin;
 import org.gradle.api.Project;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 
 public class UploadApkPlugin implements Plugin<Project> {
@@ -18,9 +17,6 @@ public class UploadApkPlugin implements Plugin<Project> {
             task.doLast( lastTask -> {
                 if (StringUtils.isBlank(uploadApkPlugin.apkFileLocation)) {
                     throw new IllegalArgumentException("apk文件地址没有配置");
-                }
-                if (StringUtils.isBlank(uploadApkPlugin.uKey)) {
-                    throw new IllegalArgumentException("uKey没有配置");
                 }
                 if (StringUtils.isBlank(uploadApkPlugin.apiKey)) {
                     throw new IllegalArgumentException("apiKey没有配置");
@@ -34,7 +30,7 @@ public class UploadApkPlugin implements Plugin<Project> {
                         if (files != null) {
                             File selectApk = files[0];
                             System.out.println("选择到apk文件：" + selectApk.getName());
-                            uploadApk(selectApk,uploadApkPlugin.uKey,uploadApkPlugin.apiKey);
+                            uploadApk(selectApk, uploadApkPlugin);
                         }else{
                             System.out.println("当前目录下没有apk文件");
                         }
@@ -42,26 +38,28 @@ public class UploadApkPlugin implements Plugin<Project> {
                         //配置的直接对应是apk文件
                         System.out.println("当前地址：" + uploadApkPlugin.apkFileLocation + "    配置的是文件");
                         System.out.println("选择到apk文件：" + apkFilePath.getName());
-                        uploadApk(apkFilePath,uploadApkPlugin.uKey,uploadApkPlugin.apiKey);
+                        uploadApk(apkFilePath, uploadApkPlugin);
                     }
-                }else{
+                } else {
                     throw new RuntimeException("当前地址： " + uploadApkPlugin.apkFileLocation + "不存在");
                 }
             });
         });
     }
 
-    private void uploadApk(File file,String uKey,String apiKey) {
-        String url = "https://www.pgyer.com/apiv1/app/upload";
+    private void uploadApk(File file, UploadApkPluginExtension extension) {
+        String url = "https://www.pgyer.com/apiv2/app/upload";
         OkHttpClient okHttpClient = new OkHttpClient();
 
-        RequestBody fileBody = RequestBody.create(file,MediaType.parse("application/octet-stream"));
+        RequestBody fileBody = RequestBody.create(file, MediaType.parse("application/octet-stream"));
 
         MultipartBody body = new MultipartBody.Builder()
                 .setType(MediaType.parse("multipart/form-data"))
-                .addFormDataPart("file","app.apk",fileBody)
-                .addFormDataPart("uKey", uKey)
-                .addFormDataPart("_api_key",apiKey)
+                .addFormDataPart("file", "app.apk", fileBody)
+                .addFormDataPart("buildInstallType", extension.buildInstallType)
+                .addFormDataPart("buildPassword", extension.buildPassword)
+                .addFormDataPart("buildUpdateDescription", extension.buildUpdateDescription)
+                .addFormDataPart("_api_key", extension.apiKey)
                 .build();
 
         final Request request = new Request.Builder()
